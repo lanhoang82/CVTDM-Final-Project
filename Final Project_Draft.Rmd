@@ -1,0 +1,31 @@
+---
+title: "CVTDM FINAL PROJECT - Lan Hoang and Monica Cruz"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+library(caret)
+library(dummies)
+library(leaps)
+library(ggplot2)
+library(forecast)
+library(gplots)
+library(FNN)
+library(rpart)
+library(rpart.plot)
+
+```
+ Reading datasets
+
+```{r}
+
+rm(list = ls()) # clean environment
+cat("\014") # clean console
+setwd("C:\\Users\\lanhh\\OneDrive\\Documents\\UNIGE Statistics\\Masters of Biz Analytics\\Creating Value through Data Mining\\Fall 2021\\5. Final Project")
+
+sales_train.df <- read.csv("sales_train.csv", header = T, sep = ",", na.strings=c("")) #importing data
+
+```
