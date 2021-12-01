@@ -25,7 +25,37 @@ library(rpart.plot)
 rm(list = ls()) # clean environment
 cat("\014") # clean console
 setwd("C:\\Users\\lanhh\\OneDrive\\Documents\\UNIGE Statistics\\Masters of Biz Analytics\\Creating Value through Data Mining\\Fall 2021\\5. Final Project")
+```
 
+```{r}
 sales_train.df <- read.csv("sales_train.csv", header = T, sep = ",", na.strings=c("")) #importing data
+```
+
+```{r}
+items.df <- read.csv("items.csv", header = T, sep = ",", na.strings=c(""))
+item_categories.df <- read.csv("item_categories.csv", header = T, sep = ",", na.strings=c(""))
+shops.df <- read.csv("shops.csv", header = T, sep = ",", na.strings=c(""))
 
 ```
+
+
+```{r}
+summary(sales_train.df)
+```
+No N/A or missing values
+
+```{r}
+#boxplot of numeric variables
+```
+
+Need to have item_cnt_day calculated in monthly value. So we can have item_cnt_month
+
+```{r}
+#create time series object using ts() per the book
+
+sales_train.ts <- ts(sales_train.df$item_cnt_month, start = c(2013, 1), end = c(2015, 10 (or 33?)), freq = 12)
+
+#plot the series
+plot(sales_train.ts, xlab = "Time", ylab = "Sales Volume by month", ylim = c(min, max - minus the outliers)
+```
+
