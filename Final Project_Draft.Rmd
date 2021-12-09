@@ -16,6 +16,7 @@ library(gplots)
 library(FNN)
 library(rpart)
 library(rpart.plot)
+library(dplyr)
 
 ```
  Reading datasets
@@ -27,35 +28,113 @@ cat("\014") # clean console
 setwd("C:\\Users\\lanhh\\OneDrive\\Documents\\UNIGE Statistics\\Masters of Biz Analytics\\Creating Value through Data Mining\\Fall 2021\\5. Final Project")
 ```
 
+
 ```{r}
 sales_train.df <- read.csv("sales_train.csv", header = T, sep = ",", na.strings=c("")) #importing data
+
+sales_test.df <- read.csv("test.csv", header = T, sep = ",", na.strings=c(""))
 ```
 
 ```{r}
 items.df <- read.csv("items.csv", header = T, sep = ",", na.strings=c(""))
+
 item_categories.df <- read.csv("item_categories.csv", header = T, sep = ",", na.strings=c(""))
+
 shops.df <- read.csv("shops.csv", header = T, sep = ",", na.strings=c(""))
 
 ```
 
+Since the data set might have been designed for Python with the index starting from 0, we adjust the index to start from 1 in this test set to work with R.
+
 
 ```{r}
-summary(sales_train.df)
+new_sales_train <- merge(sales_train.df, items.df, by = "item_id", all.x = TRUE)
+#merge_item_shop <- merge(merge_item, shops.df, by = "shop_id", all.x = TRUE)
+
+#merge_item_shop_itemcat <- merge(merge_item_shop, item_categories.df, by = "item_category_id", all.x = TRUE)
 ```
-No N/A or missing values
 
 ```{r}
-#boxplot of numeric variables
+#drop the columns with item_id, shop_id and item_category_id
+
+#drops <- c("item_id","shop_id", "item_category_id")
+#sales_train_merged <- merge_item_shop_itemcat[ , !(names(merge_item_shop_itemcat) %in% drops)]
 ```
 
-Need to have item_cnt_day calculated in monthly value. So we can have item_cnt_month
 
 ```{r}
-#create time series object using ts() per the book
+summary(new_sales_train)
+```
+No N/A or missing values in the sales_train set, which is a good thing
 
-sales_train.ts <- ts(sales_train.df$item_cnt_month, start = c(2013, 1), end = c(2015, 10 (or 33?)), freq = 12)
 
-#plot the series
-plot(sales_train.ts, xlab = "Time", ylab = "Sales Volume by month", ylim = c(min, max - minus the outliers)
+```{r}
+#convert the date column from string to date format
+new_sales_train$date <- as.Date(new_sales_train$date, "%d.%m.%Y")
 ```
 
+```{r}
+#attempt to reorder the data by date column, but the index column goes with it and is not reset according to the new order
+#new <- sales_train_merged[order(sales_train_merged$date),]
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+#reoder the dataframe by date and reset the index numbering according to the new order
+
+#new_sales_train <- new_sales_train %>% arrange(date, item_id)
+```
+
+Finding the min and max date of the dataset
+
+```{r}
+min(new_sales_train$date)
+max(new_sales_train$date)
+summary(new_sales_train)
+```
+Now moving onto data cleaning. We notice that there are item prices that are less 
+than 0, we need to remove that as it's not logical. 
+
+```{r}
+new_sales_train <- new_sales_train[new_sales_train$item_price > 0, ]
+```
+
+Data pre-processing
+
+```{r}
+#dropping some less useful features like item_name
+new_sales_train$item_name <- NULL
+
+```
+
+```{r}
+#sort data set by date
+new_sales_train <- new_sales_train %>% arrange(date, item_id)
+
+```
+
+
+```{r}
+#aggregate data by month (date_block_num)
+data_group <- new_sales_train %>%                                 # Group data
+  group_by(date_block_num, shop_id, item_category_id, item_id) %>%
+  dplyr::summarize(sum_item_price = sum(item_price), mean_item_price = mean(item_price),
+                   transaction = n(), sum_item_cnt = sum(item_cnt_day), mean_item_cnt = mean(item_cnt_day)) %>% 
+  as.data.frame()
+data_group   
+```
+
+```{r}
+## Extract time based features.
+data_group$year <- (data_group$date_block_num%/%12) + 2013
+data_group$month <- (data_group$date_block_num%%12)
+```
+
+EXPLORATORY DATA ANALYSIS
+
+Now need to visualize data, as well as check and remove any outliers (some treated 
+"item_cnt" > 20 and < 0, "item_price" >= 400000 as outliers, so perhaps we could removed them as such,
+but up to you)
