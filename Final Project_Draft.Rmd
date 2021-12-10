@@ -5,7 +5,7 @@ output:
     df_print: paged
 ---
 
-
+install.packages("lubridate")
 ```{r}
 library(caret)
 library(dummies)
@@ -17,12 +17,12 @@ library(FNN)
 library(rpart)
 library(rpart.plot)
 library(dplyr)
-
+library (plotly)
+library(lubridate)
 ```
  Reading datasets
 
 ```{r}
-
 rm(list = ls()) # clean environment
 cat("\014") # clean console
 setwd("C:\\Users\\lanhh\\OneDrive\\Documents\\UNIGE Statistics\\Masters of Biz Analytics\\Creating Value through Data Mining\\Fall 2021\\5. Final Project")
@@ -131,6 +131,7 @@ data_group
 ## Extract time based features.
 data_group$year <- (data_group$date_block_num%/%12) + 2013
 data_group$month <- (data_group$date_block_num%%12)
+
 ```
 
 EXPLORATORY DATA ANALYSIS
@@ -138,3 +139,104 @@ EXPLORATORY DATA ANALYSIS
 Now need to visualize data, as well as check and remove any outliers (some treated 
 "item_cnt" > 20 and < 0, "item_price" >= 400000 as outliers, so perhaps we could removed them as such,
 but up to you)
+
+```{r}
+options(scipen = 999)
+str(new_sales_train)
+#adding the daily value of sales 
+new_sales_train$amount<-c(new_sales_train$item_price*new_sales_train$item_cnt_day)
+
+#converting daily data into monthly
+set.seed(1)
+
+new_sales_train$month<-floor_date(new_sales_train$date, "month")
+
+monthly_mean<-new_sales_train%>%
+                 group_by(month) %>%
+                  summarize(mean = mean(amount))
+
+monthly_dollars<-new_sales_train%>%
+                  group_by(month) %>%
+                  summarize(total.sales = sum(amount))
+
+
+monthly_sales<- data.frame(c(monthly_dollars, monthly_mean))
+monthly_sales
+                            
+
+#Plotting monthly sales in dollars
+data<-monthly_dollars
+plot_sales<-data %>%
+  ggplot( aes(x=month, y=total.sales)) +
+    geom_area(fill="#69b3a2", alpha=0.5) +
+    geom_line(color="#69b3a2") +
+    ylab("monthly sales in dollars") 
+
+plot_sales<-ggplotly(plot_sales)
+plot_sales
+
+
+#Plotting monthly mean of sales 
+data<-monthly_mean
+plot_meansales<-data %>%
+  ggplot( aes(x=month, y=mean)) +
+    geom_area(fill="#69b3a7", alpha=0.5) +
+    geom_line(color="#69b3a3") +
+    ylab("monthly mean of sales") 
+
+plot_meansales<-ggplotly(plot_meansales)
+plot_meansales
+
+```
+
+```{r}
+options(scipen = 999)
+#converting daily data into monthly for the item counts (how many items sold per month)
+set.seed(1)
+new_sales_train$month<-floor_date(new_sales_train$date, "month")
+
+monthly_items<-new_sales_train%>%
+                  group_by(month) %>%
+                  summarize(total.items = sum(item_cnt_day))
+
+monthly_items_mean<-new_sales_train%>%
+                 group_by(month) %>%
+                  summarize(mean = mean(item_cnt_day))
+
+
+monthly_items.sales<- data.frame(c(monthly_items, monthly_items_mean))
+monthly_items.sales
+
+#Plotting monthly items sold 
+data<-monthly_items
+plot_monthly.items<-data %>%
+  ggplot( aes(x=month, y=total.items)) +
+    geom_area(fill="#69b3a7", alpha=0.5) +
+    geom_line(color="#69b3a3") +
+    ylab("total monthly items sold") 
+
+plot_monthly.items<-ggplotly(plot_monthly.items)
+plot_monthly.items
+
+#Plotting monthly mean of items sold 
+data<-monthly_items_mean
+plot_monthly.items.mean<-data %>%
+  ggplot( aes(x=month, y=mean)) +
+    geom_area(fill="#69b3a7", alpha=0.5) +
+    geom_line(color="#69b3a3") +
+    ylab("mean monthly items sold") 
+
+plot_monthly.items.mean<-ggplotly(plot_monthly.items.mean)
+plot_monthly.items.mean
+
+```
+
+
+
+
+
+
+
+
+
+
