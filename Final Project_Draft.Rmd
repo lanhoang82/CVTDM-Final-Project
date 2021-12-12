@@ -526,27 +526,14 @@ par=(cex=.5)
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 ```
 ```{r}
-
-#Plotting Month vs. Item_cnt (sum)
-sum_month.plot<- ggplot(data_group, aes(x=data_group$month, y=data_group$sum_item_cnt, color ="aquamarine2"))+
-  geom_line()
-sum_month.plot
-
-  
-#Plotting Month vs. Item_cnt (mean)
-mean_month.plot<- ggplot(data_group, aes(x=data_group$month, y=data_group$mean_item_cnt, color ="aquamarine2"))+
-  geom_line()
-mean_month.plot 
-  
-
 #Plotting Mean quantity of Items by shop 
-mean_item.plot<- ggplot(data_group, aes(x=data_group$shop_id, y=data_group$mean_item_cnt))+
+mean_item.plot<- ggplot(data_group, aes(x=shop_id, y=mean_item_cnt))+
   geom_bar(stat = "identity", fill = "#FF6666")
 
 mean_item.plot
 
 #Plotting Sum quantity of Items by shop 
-sum_item.plot<- ggplot(data_group, aes(x=data_group$shop_id, y=data_group$sum_item_cnt))+
+sum_item.plot<- ggplot(data_group, aes(x=shop_id, y=sum_item_cnt))+
   geom_bar(stat = "identity", fill = "#FF6666") 
 
 sum_item.plot
@@ -555,28 +542,38 @@ sum_item.plot
 
 #Plotting Item_category_ID vs. Item_cnt (Sum)
 
-sum_itemcat.plot<- ggplot(data_group, aes(x=data_group$item_category_id, y=data_group$sum_item_cnt))+
+sum_itemcat.plot<- ggplot(data_group, aes(x=item_category_id, y=sum_item_cnt))+
   geom_bar(stat = "identity", fill = "royalblue") 
 
 sum_itemcat.plot
 
 #Plotting Item_category_ID vs. Item_cnt (Mean)
-mean_itemcat.plot<- ggplot(data_group, aes(x=data_group$item_category_id, y=data_group$mean_item_cnt))+
+mean_itemcat.plot<- ggplot(data_group, aes(x=item_category_id, y=mean_item_cnt))+
   geom_bar(stat = "identity", fill = "royalblue") 
 mean_itemcat.plot
 
 ```
 ```{r}
-#Plotting items quantity per month 
+#Plotting items quantity per month mean 
 data_months<-data_group
 plot_monthly.mean<-data_months %>%
-  ggplot( aes(x=month, y=mean_item_cnt)) +
-    geom_area(fill="#69b3a7", alpha=0.5) +
+  ggplot( aes(x=month, y=mean_item_cnt))+
     geom_line(color="#69b3a3") +
     ylab("Mean item cnt") 
 
 plot_monthly.mean<-ggplotly(plot_monthly.mean)
 plot_monthly.mean
+
+
+#Plotting items quantity per month sum
+data_months.sum<-data_group
+plot_monthly.sum<-data_months.sum %>%
+  ggplot( aes(x=month, y=sum_item_cnt))+
+    geom_line(color="#69b3a3") +
+    ylab("Sum item cnt") 
+
+plot_monthly.sum<-ggplotly(plot_monthly.sum)
+plot_monthly.sum
 ```
 
 
