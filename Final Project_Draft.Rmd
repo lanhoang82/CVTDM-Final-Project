@@ -6,6 +6,7 @@ output:
 ---
 
 install.packages("lubridate")
+install.packages("streamgraph")
 ```{r}
 library(caret)
 library(dummies)
@@ -19,6 +20,10 @@ library(rpart.plot)
 library(dplyr)
 library (plotly)
 library(lubridate)
+library(data.table)
+library(viridis)
+library(tidyverse)
+library(DT)
 ```
  Reading datasets
 
@@ -231,9 +236,349 @@ plot_monthly.items.mean
 
 ```
 
+```{r}
+
+#Monthly sales per shop
+df.monthsSHOPsales = aggregate(list(Sales=new_sales_train$amount),by=list(shopID=(new_sales_train$shop_id), Month=cut(as.POSIXct(new_sales_train$date),"month")),sum)
+
+df.monthsSHOPsales.fin<- df.monthsSHOPsales %>% mutate(id = row_number())
+df.monthsSHOPsales.fin
+
+#Plotting monthly sales per shop 
+par=(cex=.1)
+data <- df.monthsSHOPsales
+data %>%
+  ggplot( aes(x=Month, y=Sales, group=shopID, color=shopID)) +
+    geom_line()
+
+
+#splitting data frame per month 2013 
+data_frame_january13<- df.monthsSHOPsales.fin[1:45,]
+data_frame_january13
+
+#Barplot january 2013 sales per shop 
+par=(cex=.5)
+ ggplot(data=data_frame_january13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+ 
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+ #splitting data frame feb 2013 
+data_frame_feb13<- df.monthsSHOPsales.fin[46:91,]
+data_frame_feb13
+
+#Barplot feb 2013 sales per shop
+par=(cex=.5)
+ ggplot(data=data_frame_feb13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame march 2013 
+data_frame_march13<- df.monthsSHOPsales.fin[92:137,]
+data_frame_march13
+
+par=(cex=.5)
+ ggplot(data=data_frame_march13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+ #splitting data frame april 2013 
+data_frame_april13<- df.monthsSHOPsales.fin[138:183,]
+data_frame_april13
+
+par=(cex=.5)
+ ggplot(data=data_frame_april13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+
+ #splitting data frame may 2013
+data_frame_may13<- df.monthsSHOPsales.fin[184:228,]
+data_frame_may13
+
+par=(cex=.5)
+ ggplot(data=data_frame_may13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame june 2013
+data_frame_june13<- df.monthsSHOPsales.fin[229:274,]
+data_frame_june13
+
+par=(cex=.5)
+ ggplot(data=data_frame_june13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame july 2013
+data_frame_july13<- df.monthsSHOPsales.fin[275:320,]
+data_frame_july13
+
+par=(cex=.5)
+ ggplot(data=data_frame_july13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame august 2013
+data_frame_aug13<- df.monthsSHOPsales.fin[321:365,]
+data_frame_aug13
+
+par=(cex=.5)
+ ggplot(data=data_frame_aug13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame september 2013
+data_frame_sep13<- df.monthsSHOPsales.fin[366:410,]
+data_frame_sep13
+
+par=(cex=.5)
+ ggplot(data=data_frame_sep13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame october 2013
+data_frame_oct13<- df.monthsSHOPsales.fin[411:456,]
+data_frame_oct13
+
+par=(cex=.5)
+ ggplot(data=data_frame_oct13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame november 2013
+data_frame_nov13<- df.monthsSHOPsales.fin[457:501,]
+data_frame_nov13
+
+par=(cex=.5)
+ ggplot(data=data_frame_nov13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame december 2013
+data_frame_dec13<- df.monthsSHOPsales.fin[502:547,]
+data_frame_dec13
+
+par=(cex=.5)
+ ggplot(data=data_frame_dec13, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+```
+
+```{r}
+#splitting data frame per month 2014
+data_frame_january14<- df.monthsSHOPsales.fin[548:593,]
+data_frame_january14
+
+#Barplot january 2014 sales per shop 
+par=(cex=.5)
+ ggplot(data=data_frame_january14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+ #splitting data frame feb  
+data_frame_feb14<- df.monthsSHOPsales.fin[594:639,]
+data_frame_feb14
+
+#Barplot feb 2014 sales per shop
+par=(cex=.5)
+ ggplot(data=data_frame_feb14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame march 2014 
+data_frame_march14<- df.monthsSHOPsales.fin[640:687,]
+data_frame_march14
+
+par=(cex=.5)
+ ggplot(data=data_frame_march14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+ #splitting data frame april 2014 
+data_frame_april14<- df.monthsSHOPsales.fin[688:736,]
+data_frame_april14
+
+par=(cex=.5)
+ ggplot(data=data_frame_april14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+
+ #splitting data frame may 2014
+data_frame_may14<- df.monthsSHOPsales.fin[737:785,]
+data_frame_may14
+
+par=(cex=.5)
+ ggplot(data=data_frame_may14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame june 2014
+data_frame_june14<- df.monthsSHOPsales.fin[786:834,]
+data_frame_june14
+
+par=(cex=.5)
+ ggplot(data=data_frame_june14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame july 2014
+data_frame_july14<- df.monthsSHOPsales.fin[835:884,]
+data_frame_july14
+
+par=(cex=.5)
+ ggplot(data=data_frame_july14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame august 2014
+data_frame_aug14<- df.monthsSHOPsales.fin[885:935,]
+data_frame_aug14
+
+par=(cex=.5)
+ ggplot(data=data_frame_aug14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame september 2014
+data_frame_sep14<- df.monthsSHOPsales.fin[936:985,]
+data_frame_sep14
+
+par=(cex=.5)
+ ggplot(data=data_frame_sep14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+
+#splitting data frame october 2014
+data_frame_oct14<- df.monthsSHOPsales.fin[986:1000,]
+data_frame_oct14
+
+par=(cex=.5)
+ ggplot(data=data_frame_oct14, aes(x=shopID, y=Sales))+
+  xlab("Stores")+ ylab("Number of sales")+
+  geom_bar(stat="identity")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.y = element_text(face="bold",color="black",size=8))
+```
+```{r}
+par(mfrow=c(1,2)) 
+#Plotting Month vs. Item_cnt (sum)
+sum_month.plot<- ggplot(data_group, aes(x=data_group$month, y=data_group$sum_item_cnt, color ="aquamarine2"))+
+  geom_line()
+sum_month.plot
+
+  
+#Plotting Month vs. Item_cnt (mean)
+mean_month.plot<- ggplot(data_group, aes(x=data_group$month, y=data_group$mean_item_cnt, color ="aquamarine2"))+
+  geom_line()
+mean_month.plot 
+  
+  
+
+#Plotting Mean quantity of Items by shop 
+mean_item.plot<- ggplot(data_group, aes(x=data_group$shop_id, y=data_group$mean_item_cnt))+
+  geom_bar(stat = "identity", fill = "#FF6666")
+
+mean_item.plot
+
+#Plotting Sum quantity of Items by shop 
+sum_item.plot<- ggplot(data_group, aes(x=data_group$shop_id, y=data_group$sum_item_cnt))+
+  geom_bar(stat = "identity", fill = "#FF6666") 
+
+sum_item.plot
 
 
 
+#Plotting Item_category_ID vs. Item_cnt (Sum)
+
+sum_itemcat.plot<- ggplot(data_group, aes(x=data_group$item_category_id, y=data_group$sum_item_cnt))+
+  geom_bar(stat = "identity", fill = "royalblue") 
+
+sum_itemcat.plot
+
+#Plotting Item_category_ID vs. Item_cnt (Mean)
+mean_itemcat.plot<- ggplot(data_group, aes(x=data_group$item_category_id, y=data_group$mean_item_cnt))+
+  geom_bar(stat = "identity", fill = "royalblue") 
+mean_itemcat.plot
+
+```
+```{r}
+#Plotting items quantity per month 
+data<-monthly_items
+plot_monthly.items<-data %>%
+  ggplot( aes(x=month, y=total.items)) +
+    geom_area(fill="#69b3a7", alpha=0.5) +
+    geom_line(color="#69b3a3") +
+    ylab("total monthly items sold") 
+
+plot_monthly.items<-ggplotly(plot_monthly.items)
+plot_monthly.items
+```
 
 
 
