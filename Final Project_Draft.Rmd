@@ -260,7 +260,7 @@ data_frame_january13
 par=(cex=.5)
  ggplot(data=data_frame_january13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+ 
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -273,7 +273,7 @@ data_frame_feb13
 par=(cex=.5)
  ggplot(data=data_frame_feb13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -285,7 +285,7 @@ data_frame_march13
 par=(cex=.5)
  ggplot(data=data_frame_march13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -297,7 +297,7 @@ data_frame_april13
 par=(cex=.5)
  ggplot(data=data_frame_april13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -310,7 +310,7 @@ data_frame_may13
 par=(cex=.5)
  ggplot(data=data_frame_may13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -322,7 +322,7 @@ data_frame_june13
 par=(cex=.5)
  ggplot(data=data_frame_june13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -334,7 +334,7 @@ data_frame_july13
 par=(cex=.5)
  ggplot(data=data_frame_july13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -346,7 +346,7 @@ data_frame_aug13
 par=(cex=.5)
  ggplot(data=data_frame_aug13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -358,7 +358,7 @@ data_frame_sep13
 par=(cex=.5)
  ggplot(data=data_frame_sep13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -370,7 +370,7 @@ data_frame_oct13
 par=(cex=.5)
  ggplot(data=data_frame_oct13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -382,7 +382,7 @@ data_frame_nov13
 par=(cex=.5)
  ggplot(data=data_frame_nov13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -394,7 +394,7 @@ data_frame_dec13
 par=(cex=.5)
  ggplot(data=data_frame_dec13, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="plum1")+
   theme(plot.title = element_text(hjust = 0.5))+
   theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
@@ -410,9 +410,9 @@ data_frame_january14
 par=(cex=.5)
  ggplot(data=data_frame_january14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 
  #splitting data frame feb  
@@ -423,9 +423,9 @@ data_frame_feb14
 par=(cex=.5)
  ggplot(data=data_frame_feb14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 
 #splitting data frame march 2014 
@@ -435,9 +435,9 @@ data_frame_march14
 par=(cex=.5)
  ggplot(data=data_frame_march14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 
  #splitting data frame april 2014 
@@ -447,9 +447,9 @@ data_frame_april14
 par=(cex=.5)
  ggplot(data=data_frame_april14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 
 
@@ -460,9 +460,9 @@ data_frame_may14
 par=(cex=.5)
  ggplot(data=data_frame_may14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 
 #splitting data frame june 2014
@@ -472,9 +472,9 @@ data_frame_june14
 par=(cex=.5)
  ggplot(data=data_frame_june14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 
 #splitting data frame july 2014
@@ -484,9 +484,9 @@ data_frame_july14
 par=(cex=.5)
  ggplot(data=data_frame_july14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 
 #splitting data frame august 2014
@@ -496,9 +496,9 @@ data_frame_aug14
 par=(cex=.5)
  ggplot(data=data_frame_aug14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 
 #splitting data frame september 2014
@@ -508,9 +508,9 @@ data_frame_sep14
 par=(cex=.5)
  ggplot(data=data_frame_sep14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 
 #splitting data frame october 2014
@@ -520,9 +520,9 @@ data_frame_oct14
 par=(cex=.5)
  ggplot(data=data_frame_oct14, aes(x=shopID, y=Sales))+
   xlab("Stores")+ ylab("Number of sales")+
-  geom_bar(stat="identity")+
+  geom_bar(stat="identity", fill ="mediumpurple")+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(face="bold",color="black",size=8, angle=45))+
+  theme(axis.text.x = element_text(face="bold",color="black",size=8))+
   theme(axis.text.y = element_text(face="bold",color="black",size=8))
 ```
 ```{r}
@@ -575,9 +575,43 @@ plot_monthly.sum<-data_months.sum %>%
 plot_monthly.sum<-ggplotly(plot_monthly.sum)
 plot_monthly.sum
 ```
+```{r}
+##Checking for outliers 
+options(scipen = 999)
+Itemprice_cnt<-ggplot(data_group, aes(x=sum_item_cnt, y=sum_item_price)) + 
+    geom_point(col="aquamarine2")
+
+Itemprice_cnt
+
+```
+```{r}
+options(scipen = 999)
+Itemtrans_cnt<-ggplot(data_group, aes(x=sum_item_cnt, y=transaction)) + 
+    geom_point(col="brown1")
+
+Itemtrans_cnt
+
+```
+
+```{r}
+Itemcnt<-ggplot(data_group, aes(x=sum_item_cnt)) + 
+    geom_boxplot(col="darkturquoise")
+
+Itemcnt
+```
+
+```{r}
+#Removing outliers : item_cnt" <= 20 and >= 0, "item_price" < 400000)
+
+data_group<-data_group[data_group$sum_item_price<400000, ]
+data_group<-data_group[data_group$sum_item_cnt>= 0, ]
+data_group<-data_group[data_group$sum_item_cnt<= 20, ]
 
 
+options(scipen = 999)
+ggplot(data_group, aes(x=sum_item_cnt, y=sum_item_price)) + 
+    geom_point(col="aquamarine2")
 
-
+```
 
 
