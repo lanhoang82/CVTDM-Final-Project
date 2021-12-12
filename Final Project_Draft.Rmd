@@ -83,7 +83,7 @@ new_sales_train$date <- as.Date(new_sales_train$date, "%d.%m.%Y")
 #new <- sales_train_merged[order(sales_train_merged$date),]
 ```
 
-```{r}
+```{r warning=FALSE}
 library(tidyverse)
 ```
 
