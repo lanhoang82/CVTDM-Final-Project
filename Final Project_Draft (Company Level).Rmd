@@ -138,7 +138,15 @@ summary(monthly_sales)
 ```
 
 ```{r}
-#boxplot of numeric variables
+#boxplot of item_cnt_month
+boxplot(monthly_sales$item_cnt_month,
+        main = "Monthly sales of all stores",
+xlab = "Monthly sales (items)",
+ylab = "",
+col = "orange",
+border = "brown",
+horizontal = TRUE)
+
 ```
 
 Need to have item_cnt_day calculated in monthly value. So we can have item_cnt_month
@@ -180,7 +188,7 @@ a seasonable naive forecast.
 ```{r}
 #data partition
 
-nValid <- 10
+nValid <- 8
 nTrain <- length(monthly_sales.ts) - nValid
 
 train.ts <- window(monthly_sales.ts, start = c(2013, 1), end = c(2013, nTrain))
@@ -221,6 +229,8 @@ accuracy(naive.pred, valid.ts)
 accuracy(snaive.pred, valid.ts)
 ```
 Because there is some element of seasonality in the data set, we see that the
-seasonal naive method has lower RMSE and is the better model on both training and 
-validation sets, especially the accuracy on the validation set that will be more indicative
+naive method has lower RMSE and is the better model when it comes to the validation set, 
+especially when the accuracy on the validation set that will be more indicative
 of how the model will perform in the future.
+
+REGRESSION-BASED FORECASTING
