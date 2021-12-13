@@ -1,0 +1,226 @@
+---
+title: "CVTDM FINAL PROJECT - Lan Hoang and Monica Cruz"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+library(caret)
+library(dummies)
+library(leaps)
+library(ggplot2)
+library(forecast)
+library(gplots)
+library(FNN)
+library(rpart)
+library(rpart.plot)
+library(tidyverse)
+
+library(dplyr)
+library(lubridate)
+library (plotly)
+
+```
+ Reading datasets
+
+```{r}
+
+rm(list = ls()) # clean environment
+cat("\014") # clean console
+setwd("C:\\Users\\lanhh\\OneDrive\\Documents\\UNIGE Statistics\\Masters of Biz Analytics\\Creating Value through Data Mining\\Fall 2021\\5. Final Project")
+```
+
+
+```{r}
+sales_train.df <- read.csv("sales_train.csv", header = T, sep = ",", na.strings=c("")) #importing data
+
+sales_test.df <- read.csv("test.csv", header = T, sep = ",", na.strings=c(""))
+```
+
+```{r}
+items.df <- read.csv("items.csv", header = T, sep = ",", na.strings=c(""))
+
+item_categories.df <- read.csv("item_categories.csv", header = T, sep = ",", na.strings=c(""))
+
+shops.df <- read.csv("shops.csv", header = T, sep = ",", na.strings=c(""))
+
+```
+
+Since the data set might have been designed for Python with the index starting from 0, we adjust the index to start from 1 in this test set to work with R.
+
+```{r}
+#sales_test1.df <- sales_test.df %>%
+#  mutate(ID = row_number())
+#perhaps need to join the data first before we update the ID.
+```
+
+```{r}
+new_sales <- merge(sales_train.df, items.df, by = "item_id", all.x = TRUE)
+#merge_item_shop <- merge(merge_item, shops.df, by = "shop_id", all.x = TRUE)
+
+#merge_item_shop_itemcat <- merge(merge_item_shop, item_categories.df, by = "item_category_id", all.x = TRUE)
+```
+
+```{r}
+#drop the columns with item_id, shop_id and item_category_id
+
+#drops <- c("item_id","shop_id", "item_category_id")
+#sales_train_merged <- merge_item_shop_itemcat[ , !(names(merge_item_shop_itemcat) %in% drops)]
+```
+
+
+```{r}
+summary(new_sales)
+```
+No N/A or missing values in the sales_train set, which is a good thing
+
+
+```{r}
+#convert the date column from string to date format
+new_sales$date <- as.Date(new_sales$date, "%d.%m.%Y")
+```
+
+
+Finding the min and max date of the dataset
+
+```{r}
+min(new_sales$date)
+max(new_sales$date)
+summary(new_sales)
+```
+Now moving onto data cleaning. We notice that there are item prices that are less 
+than 0, we need to remove that as it's not logical. 
+
+```{r}
+new_sales<- new_sales[new_sales$item_price > 0, ]
+new_sales<- new_sales[new_sales$item_cnt_day > 0, ]
+
+```
+
+Data pre-processing
+
+```{r}
+#dropping some less useful features like item_name
+new_sales$item_name <- NULL
+
+```
+
+```{r}
+#reorder the data set by the order of date
+new_sales <- new_sales %>% arrange(date, item_id)
+summary(new_sales)
+```
+
+Aggregate data into company level
+
+```{r}
+options(scipen = 999)
+
+#converting daily data into monthly for the item counts (how many items sold per month)
+set.seed(1)
+new_sales$month <- floor_date(new_sales$date, "month")
+
+monthly_sales <- new_sales%>%
+                  group_by(month) %>%
+                  summarize(item_cnt_month = sum(item_cnt_day))
+
+monthly_sales_mean<-new_sales%>%
+                 group_by(month) %>%
+                  summarize(mean_item_cnt_month = mean(item_cnt_day))
+
+```
+
+
+```{r}
+summary(monthly_sales)
+```
+
+```{r}
+#boxplot of numeric variables
+```
+
+Need to have item_cnt_day calculated in monthly value. So we can have item_cnt_month
+
+```{r}
+#create time series object using ts() per the book
+```
+
+
+```{r}
+monthly_sales.ts <- ts(monthly_sales$item_cnt_month, start = c(2013, 1), end = c(2015, 10), freq = 12)
+
+```
+
+Overall, the sales trend seems to be decreasing with what seems like seasonal spikes
+towards the end of 2013 and end of 2014, perhaps around the holiday season. 
+
+Now we fit a linear regression model to the time series
+```{r}
+monthly_sales.lm <- tslm(monthly_sales.ts ~trend + I(trend^2))
+```
+
+Overlay the fitted value of the linear model
+
+```{r}
+#plot the series
+plot(monthly_sales.ts, xlab = "Time", ylab = "Sales Volume by month", ylim = c(63000, 190000))
+lines(monthly_sales.lm$fitted.values, lwd = 2)
+```
+Data partitioning: We partition a time series into 2 periods, the earlier period 
+is set as the training data and the later period is set as the validation data.
+We then apply methods to the earlier training period, and their predictive performance
+assessed on the later validation period. 
+
+The base model for benchmark performance - the Naive forecast. This is the most recent
+value of the series. Given that this time series has seasonality, we can generate also
+a seasonable naive forecast. 
+
+```{r}
+#data partition
+
+nValid <- 10
+nTrain <- length(monthly_sales.ts) - nValid
+
+train.ts <- window(monthly_sales.ts, start = c(2013, 1), end = c(2013, nTrain))
+valid.ts <- window(monthly_sales.ts, start = c(2013, nTrain+1), end = c(2013, nTrain + nValid))
+
+```
+
+Generate naive and seasonal naive forecasts
+```{r}
+naive.pred <- naive(train.ts, h = nValid)
+snaive.pred <- snaive(train.ts, h = nValid)
+
+```
+
+Plot forecasts and actuals in the training and validation sets
+```{r}
+plot(train.ts, ylim = c(63000, 290000), ylab = "Sales volume by month", xlab = "Time", bty = "l", 
+     xaxt = "n", xlim = c(2013, 2015.9), main = "")
+axis(1, at = seq(2013, 2015.9, 1), labels = format(seq(2013, 2015.9, 1)))
+lines(naive.pred$mean, lwd = 2, col = "blue", lty = 1)
+lines(snaive.pred$mean, lwd = 2, col = "blue", lty = 1)
+lines(valid.ts, col = "grey20", lty = 3)
+lines(c(2015.8 - 2, 2013.8 - 3), c(0, 20000))
+lines(c(2015.8, 2015.8), c(0, 20000))
+text(2013, 2015, "Training")
+text(2015, 2015.8, "Validation")
+text(2015.8, 2016, "Future")
+arrows(2015 -2, 18000, 2013.25, 18000, code = 3, length = 0.1, lwd = 1,angle = 30)
+arrows(2015.5 - 2, 18000, 2015.3, 18000, code = 3, length = 0.1, lwd = 1,angle = 30)
+arrows(2015.5, 18000, 2006, 18000, code = 3, length = 0.1, lwd = 1, angle = 30)
+
+```
+
+Predictive accuracy  of naive and seasonal naive forecast in the validation set 
+```{r}
+accuracy(naive.pred, valid.ts)
+
+accuracy(snaive.pred, valid.ts)
+```
+Because there is some element of seasonality in the data set, we see that the
+seasonal naive method has lower RMSE and is the better model on both training and 
+validation sets, especially the accuracy on the validation set that will be more indicative
+of how the model will perform in the future.
