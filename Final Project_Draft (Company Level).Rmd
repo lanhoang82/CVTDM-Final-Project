@@ -22,6 +22,8 @@ library(dplyr)
 library(lubridate)
 library (plotly)
 
+install.packages("fable")
+library(tsibble)
 ```
  Reading datasets
 
@@ -149,8 +151,6 @@ horizontal = TRUE)
 
 ```
 
-Need to have item_cnt_day calculated in monthly value. So we can have item_cnt_month
-
 ```{r}
 #create time series object using ts() per the book
 ```
@@ -161,12 +161,9 @@ monthly_sales.ts <- ts(monthly_sales$item_cnt_month, start = c(2013, 1), end = c
 
 ```
 
-Overall, the sales trend seems to be decreasing with what seems like seasonal spikes
-towards the end of 2013 and end of 2014, perhaps around the holiday season. 
-
 Now we fit a linear regression model to the time series
 ```{r}
-monthly_sales.lm <- tslm(monthly_sales.ts ~trend + I(trend^2))
+#monthly_sales.lm <- tslm(monthly_sales.ts ~trend + I(trend^2))
 ```
 
 Overlay the fitted value of the linear model
@@ -174,8 +171,11 @@ Overlay the fitted value of the linear model
 ```{r}
 #plot the series
 plot(monthly_sales.ts, xlab = "Time", ylab = "Sales Volume by month", ylim = c(63000, 190000))
-lines(monthly_sales.lm$fitted.values, lwd = 2)
+#lines(monthly_sales.lm$fitted.values, lwd = 2)
 ```
+Overall, the sales trend seems to be decreasing with what seems like seasonal spikes
+towards the end of 2013 and end of 2014, perhaps around the holiday season.
+
 Data partitioning: We partition a time series into 2 periods, the earlier period 
 is set as the training data and the later period is set as the validation data.
 We then apply methods to the earlier training period, and their predictive performance
@@ -231,6 +231,86 @@ accuracy(snaive.pred, valid.ts)
 Because there is some element of seasonality in the data set, we see that the
 naive method has lower RMSE and is the better model when it comes to the validation set, 
 especially when the accuracy on the validation set that will be more indicative
-of how the model will perform in the future.
+of how the model will perform in the future. This also indicates that the seasonal
+naive model overfits the data set. 
 
 REGRESSION-BASED FORECASTING
+
+Based on the time series graph above, we see that this is a time series with a downward
+trend while also have seasonality. Thus we will apply a model that capture both trend
+and seasonality by including predictors of both types.
+
+1.A model with only trend
+
+2. A model with only seasonality
+
+```{r}
+#create a new "Season" column for the data then turn it into dummies (s = 12 seasons so we create 11 dummies)
+
+train.lm.season <- tslm(train.ts ~ season)
+summary(train.lm.season)
+```
+The coefficient for season 12 (56,232) suggests that the sales in December is higher
+by 56,232 dollars than that of January each year on average. 
+
+3. A model with both trend and seasonality. 
+
+We now fit a model to the training data with 13 predictors, 11 dummies for month and t
+and t^2 for trend. 
+
+```{r}
+train.lm.trend.season <- tslm(train.ts ~ trend + I(trend^2) + season)
+summary(train.lm.trend.season)
+```
+Generate seasonal and trendy forecasting
+
+```{r}
+season.pred <- forecast(train.lm.season, h = nValid)
+trend.season.pred <- forecast(train.lm.trend.season, h = nValid)
+
+```
+
+
+```{r}
+accuracy(season.pred, valid.ts)
+
+accuracy(trend.season.pred, valid.ts)
+```
+
+Linear regression model with season and trend seems to perform better than the model with
+just season, due to lower RMSE in the validation set, however this is still less accurate
+than the naive model. 
+
+THINGS STILL NEED TO BE DONE:
+
+1. Compute and evaluate model with autocorrelation
+2. Try out KNN regression for time series as another model
+3. Figure out how to do cross validation using stretch_tsibble as in the online book that
+Jonathan shared - so far I have issues with stretching the tsibble to create many training sets
+per below.
+
+Cross validation
+
+```{r}
+monthly_sales_tsibble <- tsibble::as_tsibble(monthly_sales, index = "month", key = "item_cnt_month")
+```
+
+
+```{r}
+#using stretch_tsibble to create many training sets
+
+monthly_sales_train <- monthly_sales_tsibble %>%
+  stretch_tsibble (.init = 3, .step = 1) %>%
+  relocate(month, item_cnt_month, .id)
+monthly_sales_train
+```
+
+```{r}
+#install.packages("fpp3")
+#library(fpp3)
+monthly_sales_train <- monthly_sales_tsibble %>%
+  select(item_cnt_month) %>%
+  stretch_tsibble(.init = 1, .step=1)
+monthly_sales_train
+```
+
