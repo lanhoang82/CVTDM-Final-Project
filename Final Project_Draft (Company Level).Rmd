@@ -405,30 +405,26 @@ plot(ro, h = 1)
 ```
 
 3. Figure out how to do cross validation using stretch_tsibble as in the online book that
-Jonathan shared - so far I have issues with stretching the tsibble to create many training sets per below.
+Jonathan shared
 
 Cross validation
 
 ```{r}
-monthly_sales_tsibble <- tsibble::as_tsibble(monthly_sales, index = "month", key = "item_cnt_month")
+monthly_sales_tsibble <- tsibble::as_tsibble(monthly_sales.ts, index = "month", key = "item_cnt_month")
 ```
 
 
-```{r}
-#using stretch_tsibble to create many training sets
-
-monthly_sales_train <- monthly_sales_tsibble %>%
-  stretch_tsibble (.init = 3, .step = 1) %>%
-  relocate(month, item_cnt_month, .id)
-monthly_sales_train
-```
+Using stretch_tsibble to create many training sets. We start with a training set 
+of length .init = 5 and increasing the size of successive training sets by .step = 1
 
 ```{r}
 #install.packages("fpp3")
 #library(fpp3)
 monthly_sales_train <- monthly_sales_tsibble %>%
-  select(item_cnt_month) %>%
-  stretch_tsibble(.init = 1, .step=1)
+  select(value) %>%
+  stretch_tsibble(.init = 5, .step=1)
 monthly_sales_train
 ```
 
+Per the article here: https://robjhyndman.com/hyndsight/tscv-fable/
+to read more in details to see how we could improve our models with this. 
