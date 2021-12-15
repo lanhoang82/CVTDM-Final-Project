@@ -506,6 +506,10 @@ plot(knn_pred)
 
 
 ```{r}
+#KNN Accuracy withou cross validation
+
+ro1 <- rolling_origin(knn_pred, h = 9,rolling = FALSE)
+
 #KNN Accuracy using cross validation
 ro <- rolling_origin(knn_pred, h = 9,rolling = TRUE)
 
@@ -526,6 +530,7 @@ print(ro$errors)
 ```{r}
 #Several forecasting accuracy measures applied to all the errors in the different test sets can be consulted:
 ro$global_accu
+ro1$global_accu
 
 #We now consult the forecasting accuracy measures for every forecasting horizon:
 ro$h_accu
@@ -551,8 +556,9 @@ Accuracy.Table <- data.frame("Method" = c("Naive",
                                   "Regression-based with Trend - CV",
                                   "Regression-based with Season - CV",
                                   "Regression-based with Trend and Season - CV",
-                                  "Regression-based with Autocorrelation",
-                                  "KNN - CV"),
+                                  "Regression-based with Season + Autocorrelation ",
+                                  "KNN",
+                                  "KNN - CV "),
                               
                                "RMSE" = c(accuracy(naive.pred, valid.ts)[4],
                                               accuracy(snaive.pred, valid.ts)[4],
@@ -563,7 +569,8 @@ Accuracy.Table <- data.frame("Method" = c("Naive",
                                               28918.52,	
                                               19884.95,
                                             accuracy(valid.res.arima.pred, valid.ts)[4],
-                                            ro$global_accu[1])
+                                          ro1$global_accu[1],  
+                                          ro$global_accu[1])
                                                  )
 
 Accuracy.Table
