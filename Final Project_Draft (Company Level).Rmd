@@ -1,0 +1,349 @@
+---
+title: "CVTDM FINAL PROJECT - Lan Hoang and Monica Cruz"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+library(caret)
+library(dummies)
+library(leaps)
+library(ggplot2)
+library(forecast)
+library(gplots)
+library(FNN)
+library(rpart)
+library(rpart.plot)
+library(tidyverse)
+
+library(dplyr)
+library(lubridate)
+library (plotly)
+
+install.packages("fable")
+library(tsibble)
+```
+ Reading datasets
+
+```{r}
+
+rm(list = ls()) # clean environment
+cat("\014") # clean console
+setwd("C:\\Users\\lanhh\\OneDrive\\Documents\\UNIGE Statistics\\Masters of Biz Analytics\\Creating Value through Data Mining\\Fall 2021\\5. Final Project")
+```
+
+
+```{r}
+sales_train.df <- read.csv("sales_train.csv", header = T, sep = ",", na.strings=c("")) #importing data
+
+sales_test.df <- read.csv("test.csv", header = T, sep = ",", na.strings=c(""))
+```
+
+```{r}
+items.df <- read.csv("items.csv", header = T, sep = ",", na.strings=c(""))
+
+item_categories.df <- read.csv("item_categories.csv", header = T, sep = ",", na.strings=c(""))
+
+shops.df <- read.csv("shops.csv", header = T, sep = ",", na.strings=c(""))
+
+```
+
+Since the data set might have been designed for Python with the index starting from 0, we adjust the index to start from 1 in this test set to work with R.
+
+```{r}
+#sales_test1.df <- sales_test.df %>%
+#  mutate(ID = row_number())
+#perhaps need to join the data first before we update the ID.
+```
+
+```{r}
+new_sales <- merge(sales_train.df, items.df, by = "item_id", all.x = TRUE)
+#merge_item_shop <- merge(merge_item, shops.df, by = "shop_id", all.x = TRUE)
+
+#merge_item_shop_itemcat <- merge(merge_item_shop, item_categories.df, by = "item_category_id", all.x = TRUE)
+```
+
+```{r}
+#drop the columns with item_id, shop_id and item_category_id
+
+#drops <- c("item_id","shop_id", "item_category_id")
+#sales_train_merged <- merge_item_shop_itemcat[ , !(names(merge_item_shop_itemcat) %in% drops)]
+```
+
+
+```{r}
+summary(new_sales)
+```
+No N/A or missing values in the sales_train set, which is a good thing
+
+
+```{r}
+#convert the date column from string to date format
+new_sales$date <- as.Date(new_sales$date, "%d.%m.%Y")
+```
+
+
+Finding the min and max date of the dataset
+
+```{r}
+min(new_sales$date)
+max(new_sales$date)
+summary(new_sales)
+```
+Now moving onto data cleaning. We notice that there are item prices that are less 
+than 0, we need to remove that as it's not logical. 
+
+```{r}
+new_sales<- new_sales[new_sales$item_price > 0, ]
+new_sales<- new_sales[new_sales$item_cnt_day > 0, ]
+
+```
+
+Data pre-processing
+
+```{r}
+#dropping some less useful features like item_name
+new_sales$item_name <- NULL
+
+```
+
+```{r}
+#reorder the data set by the order of date
+new_sales <- new_sales %>% arrange(date, item_id)
+summary(new_sales)
+```
+
+Aggregate data into company level
+
+```{r}
+options(scipen = 999)
+
+#converting daily data into monthly for the item counts (how many items sold per month)
+set.seed(1)
+new_sales$month <- floor_date(new_sales$date, "month")
+
+monthly_sales <- new_sales%>%
+                  group_by(month) %>%
+                  summarize(item_cnt_month = sum(item_cnt_day))
+
+monthly_sales_mean<-new_sales%>%
+                 group_by(month) %>%
+                  summarize(mean_item_cnt_month = mean(item_cnt_day))
+
+```
+
+
+```{r}
+summary(monthly_sales)
+```
+
+```{r}
+#boxplot of item_cnt_month
+boxplot(monthly_sales$item_cnt_month,
+        main = "Monthly sales of all stores",
+xlab = "Monthly sales (items)",
+ylab = "",
+col = "orange",
+border = "brown",
+horizontal = TRUE)
+
+```
+
+```{r}
+#create time series object using ts() per the book
+```
+
+
+```{r}
+monthly_sales.ts <- ts(monthly_sales$item_cnt_month, start = c(2013, 1), end = c(2015, 10), freq = 12)
+
+```
+
+Now we fit a linear regression model to the time series
+```{r}
+#monthly_sales.lm <- tslm(monthly_sales.ts ~trend + I(trend^2))
+```
+
+Overlay the fitted value of the linear model
+
+```{r}
+#plot the series
+plot(monthly_sales.ts, xlab = "Time", ylab = "Sales Volume by month", ylim = c(63000, 190000))
+#lines(monthly_sales.lm$fitted.values, lwd = 2)
+```
+Overall, the sales trend seems to be decreasing with what seems like seasonal spikes
+towards the end of 2013 and end of 2014, perhaps around the holiday season.
+
+Data partitioning: We partition a time series into 2 periods, the earlier period 
+is set as the training data and the later period is set as the validation data.
+We then apply methods to the earlier training period, and their predictive performance
+assessed on the later validation period. 
+
+The base model for benchmark performance - the Naive forecast. This is the most recent
+value of the series. Given that this time series has seasonality, we can generate also
+a seasonable naive forecast. 
+
+```{r}
+#data partition
+
+nValid <- 8
+nTrain <- length(monthly_sales.ts) - nValid
+
+train.ts <- window(monthly_sales.ts, start = c(2013, 1), end = c(2013, nTrain))
+valid.ts <- window(monthly_sales.ts, start = c(2013, nTrain+1), end = c(2013, nTrain + nValid))
+
+```
+
+Generate naive and seasonal naive forecasts
+```{r}
+naive.pred <- naive(train.ts, h = nValid)
+snaive.pred <- snaive(train.ts, h = nValid)
+
+```
+
+Plot forecasts and actuals in the training and validation sets
+```{r}
+plot(train.ts, ylim = c(63000, 290000), ylab = "Sales volume by month", xlab = "Time", bty = "l", 
+     xaxt = "n", xlim = c(2013, 2015.9), main = "")
+axis(1, at = seq(2013, 2015.9, 1), labels = format(seq(2013, 2015.9, 1)))
+lines(naive.pred$mean, lwd = 2, col = "blue", lty = 1)
+lines(snaive.pred$mean, lwd = 2, col = "blue", lty = 1)
+lines(valid.ts, col = "grey20", lty = 3)
+lines(c(2015.8 - 2, 2013.8 - 3), c(0, 20000))
+lines(c(2015.8, 2015.8), c(0, 20000))
+text(2013, 2015, "Training")
+text(2015, 2015.8, "Validation")
+text(2015.8, 2016, "Future")
+arrows(2015 -2, 18000, 2013.25, 18000, code = 3, length = 0.1, lwd = 1,angle = 30)
+arrows(2015.5 - 2, 18000, 2015.3, 18000, code = 3, length = 0.1, lwd = 1,angle = 30)
+arrows(2015.5, 18000, 2006, 18000, code = 3, length = 0.1, lwd = 1, angle = 30)
+
+```
+
+Predictive accuracy  of naive and seasonal naive forecast in the validation set 
+```{r}
+accuracy(naive.pred, valid.ts)
+
+accuracy(snaive.pred, valid.ts)
+```
+Because there is some element of seasonality in the data set, we see that the
+naive method has lower RMSE and is the better model when it comes to the validation set, 
+especially when the accuracy on the validation set that will be more indicative
+of how the model will perform in the future. This also indicates that the seasonal
+naive model overfits the data set. 
+
+REGRESSION-BASED FORECASTING
+
+Based on the time series graph above, we see that this is a time series with a downward
+trend while also have seasonality. Thus we will apply a model that capture both trend
+and seasonality by including predictors of both types.
+
+1.A model with only trend
+
+2. A model with only seasonality
+
+```{r}
+#create a new "Season" column for the data then turn it into dummies (s = 12 seasons so we create 11 dummies)
+
+train.lm.season <- tslm(train.ts ~ season)
+summary(train.lm.season)
+```
+The coefficient for season 12 (56,232) suggests that the sales in December is higher
+by 56,232 dollars than that of January each year on average. 
+
+3. A model with both trend and seasonality. 
+
+We now fit a model to the training data with 13 predictors, 11 dummies for month and t
+and t^2 for trend. 
+
+```{r}
+train.lm.trend.season <- tslm(train.ts ~ trend + I(trend^2) + season)
+summary(train.lm.trend.season)
+```
+Generate seasonal and trendy forecasting
+
+```{r}
+season.pred <- forecast(train.lm.season, h = nValid)
+trend.season.pred <- forecast(train.lm.trend.season, h = nValid)
+
+```
+
+
+```{r}
+accuracy(season.pred, valid.ts)
+
+accuracy(trend.season.pred, valid.ts)
+```
+
+Linear regression model with season and trend seems to perform better than the model with
+just season, due to lower RMSE in the validation set, however this is still less accurate
+than the naive model. 
+
+THINGS STILL NEED TO BE DONE:
+
+1. Compute and evaluate model with autocorrelation
+2. Try out KNN regression for time series as another model
+3. Figure out how to do cross validation using stretch_tsibble as in the online book that
+Jonathan shared - so far I have issues with stretching the tsibble to create many training sets
+per below.
+
+Autocorrelation
+In order to compute the autocorrelation is needed to compute a lagged version of the series. 
+```{r}
+#Autocorrelation chart for lags 1 to 12
+monthly.sales.ts<- window(train.ts, start= c(2013,1), end=c(2015,10))
+Acf(monthly.sales.ts, lag.max=12, main="")
+```
+The graph shows a strong correlation during every 12 months, reflecting a seasonality (annual pattern), where values during this period of each year are positively correlated. 
+
+```{r}
+#Examining autocorrelation of the residual series model 
+acf(resid(train.lm.season))
+acf(resid(train.lm.trend.season))
+```
+The autocorrelation of residuals graph shows us that the yearly pattern is not longer present in the linear model, while in the trend season regression model the influence is there. 
+
+AR(2) method
+```{r}
+#train.lm.trend.season <- tslm(train.ts ~ trend + I(trend^2) + season)
+
+train.res.arima<-Arima(train.lm.trend.season$residuals,order=c(2,0,0))
+valid.res.arima.pred<-forecast(train.res.arima, h=2)
+
+summary(train.res.arima)
+valid.res.arima.pred
+
+
+```
+The negative value displayed by the ar1 indicate us that the forecasting for the month of March 2015 should be reduced in order to adjusted it by the "point forecast" 25,237 items less. As the AR(1) was not a good fit, we check AR(2) which shows us a similar behavior (-0.2582), negative value that suggest us to decrease again the forecast by 12,067 items in the month of April 2015; providing us a forecasting of 70,166 items, when the real value was 77,948.
+
+This shows us once again that the model does not fit properly the forecasting, therefore the naive method continue to be the ideal. 
+
+
+Cross validation
+
+```{r}
+monthly_sales_tsibble <- tsibble::as_tsibble(monthly_sales, index = "month", key = "item_cnt_month")
+```
+
+
+```{r}
+#using stretch_tsibble to create many training sets
+
+monthly_sales_train <- monthly_sales_tsibble %>%
+  stretch_tsibble (.init = 3, .step = 1) %>%
+  relocate(month, item_cnt_month, .id)
+monthly_sales_train
+```
+
+```{r}
+#install.packages("fpp3")
+#library(fpp3)
+monthly_sales_train <- monthly_sales_tsibble %>%
+  select(item_cnt_month) %>%
+  stretch_tsibble(.init = 1, .step=1)
+monthly_sales_train
+```
+
