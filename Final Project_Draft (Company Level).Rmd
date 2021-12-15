@@ -225,6 +225,7 @@ Predictive accuracy  of naive and seasonal naive forecast in the validation set
 accuracy(naive.pred, valid.ts)
 
 accuracy(snaive.pred, valid.ts)
+
 ```
 Because there is some element of seasonality in the data set, we see that the
 naive method has lower RMSE and is the better model when it comes to the validation set, 
@@ -366,9 +367,10 @@ fit_trend_season %>% accuracy(monthly_sales_tsibble, by = c("h",".model")) %>%
 ```
 Even after cross-validation, RMSE of the regression-based model with both trend and season still out-performs models with only either trend or season. However, the naive model still has the lowest RMSE and the strongest predictive performance so far.
 
+
 ```{r}
 fit_AR <- monthly_sales_train %>%
-  model(ARIMA(value ~ order(1))) %>%
+  model(ARIMA(value ~ 1 + season())) %>%
   
 report(fit_AR)
   
@@ -377,13 +379,20 @@ report(fit_AR)
 Finally, we compare the forecasts against the actual values and average over the folds
 
 ```{r}
-monthly_sales_cnt <- as.ts(monthly_sales$item_cnt_month)
-
 fc_AR <- forecast(fit_AR, new_data = monthly_sales_tsibble) %>%
   group_by(.id) %>%
   mutate(h= row_number()) %>%
   ungroup()
 ```
+```{r}
+fit_AR %>% 
+  forecast() %>%
+  autoplot(monthly_sales_tsibble)
+```
+
+https://fable.tidyverts.org/reference/AR.html
+https://robjhyndman.com/hyndsight/tscv-fable/
+https://fable.tidyverts.org/reference/
 
 
 1. Compute and evaluate model with autocorrelation
@@ -494,6 +503,8 @@ knn_pred <- knn_forecasting(monthly_sales.ts, h = 1, lags = 1:12, k = c(3,12), t
 plot(knn_pred)
 ```
 
+
+
 ```{r}
 #KNN Accuracy using cross validation
 ro <- rolling_origin(knn_pred, h = 9,rolling = TRUE)
@@ -532,7 +543,30 @@ plot(ro, h = 1)
 
 ```{r}
 #NEED TO CREATE A SUMMARY TABLE WITH ALL RMSE OF ALL MODELS IN ONE PLACE
+Accuracy.Table <- data.frame("Method" = c("Naive",
+                                  "Seasonal Naive",
+                                  "Regression-based with Trend",
+                                  "Regression-based with Season",
+                                  "Regression-based with Trend and Season",
+                                  "Regression-based with Trend - CV",
+                                  "Regression-based with Season - CV",
+                                  "Regression-based with Trend and Season - CV",
+                                  "Regression-based with Autocorrelation",
+                                  "KNN - CV"),
+                              
+                               "RMSE" = c(accuracy(naive.pred, valid.ts)[4],
+                                              accuracy(snaive.pred, valid.ts)[4],
+                                              accuracy(trend.pred, valid.ts)[4],
+                                              accuracy(season.pred, valid.ts)[4],
+                                              accuracy(trend.season.pred, valid.ts)[4],
+                                              24557.37,
+                                              28918.52,	
+                                              19884.95,
+                                            accuracy(valid.res.arima.pred, valid.ts)[4],
+                                            ro$global_accu[1])
+                                                 )
 
+Accuracy.Table
 
 ```
 
