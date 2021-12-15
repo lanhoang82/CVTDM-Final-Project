@@ -311,7 +311,36 @@ THINGS STILL NEED TO BE DONE:
 
 1. Compute and evaluate model with autocorrelation
 
+Autocorrelation
+In order to compute the autocorrelation is needed to compute a lagged version of the series.
+```{r}
+#Autocorrelation chart for lags 1 to 12
+monthly.sales.ts<- window(train.ts, start= c(2013,1), end=c(2015,10))
+Acf(monthly.sales.ts, lag.max=12, main="")
+```
+The graph shows a strong correlation during every 12 months, reflecting a seasonality (annual pattern), where values during this period of each year are positively correlated.
 
+```{r}
+#Examining autocorrelation of the residual series model 
+acf(resid(train.lm.season))
+acf(resid(train.lm.trend.season))
+```
+The autocorrelation of residuals graph shows us that the yearly pattern is not longer present in the linear model, while in the trend season regression model the influence is there.
+
+AR(2) method
+```{r}
+#train.lm.trend.season <- tslm(train.ts ~ trend + I(trend^2) + season)
+
+train.res.arima<-Arima(train.lm.trend.season$residuals,order=c(2,0,0))
+valid.res.arima.pred<-forecast(train.res.arima, h=2)
+
+summary(train.res.arima)
+valid.res.arima.pred
+```
+The negative value displayed by the ar1 indicate us that the forecasting for the month of March 2015 should be reduced in order to adjusted it by the "point forecast" 25,237 items less. As the AR(1) was not a good fit, we check AR(2) which shows us a similar behavior (-0.2582), negative value that suggest us to decrease again the forecast by 12,067 items in the month of April 2015; providing us a forecasting of 70,166 items, when the real value was 77,948.
+
+This shows us once again that the model does not fit properly the forecasting, therefore the naive method continue to be the ideal.
+=======
 
 2. Try out KNN regression for time series as another model
 
