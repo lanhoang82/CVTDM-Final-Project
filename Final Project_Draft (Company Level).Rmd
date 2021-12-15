@@ -340,6 +340,7 @@ valid.res.arima.pred
 The negative value displayed by the ar1 indicate us that the forecasting for the month of March 2015 should be reduced in order to adjusted it by the "point forecast" 25,237 items less. As the AR(1) was not a good fit, we check AR(2) which shows us a similar behavior (-0.2582), negative value that suggest us to decrease again the forecast by 12,067 items in the month of April 2015; providing us a forecasting of 70,166 items, when the real value was 77,948.
 
 This shows us once again that the model does not fit properly the forecasting, therefore the naive method continue to be the ideal.
+=======
 
 2. Try out KNN regression for time series as another model
 
